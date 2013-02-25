@@ -72,4 +72,7 @@ input {width: 280px;}
 	border:1px solid silver;
 	background:white;
 }
-
+#left_panel{float:left;width:140px;}
+#labelCategory, #labelAuthor, #labelLimit {font-size: 8px;}
+ul.pagination {margin: 1em 0; padding: 0.5em; text-align: left;}
+ul.pagination li {display: inline; padding: 0.1em; border:none;}
