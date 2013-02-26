@@ -464,18 +464,46 @@ var TxpImageDialog = {
 	    success: function (response) {
 		tinyMCEPopup.dom.setHTML('catselect', response);
 		tinymce.dom.Event.add(tinyMCEPopup.dom.get('txpCategory'), 'change', function (e) {
-			this.loadImageBrowser(e.target.value);
+			tinyMCEPopup.dom.setHTML('image_browse', '<img src="img/loading.gif" width="32" height="32" alt="" id="loading" />');
+			this.loadCountBrowser(e.target.value, tinyMCEPopup.dom.get('txpAuthor').value || '0', tinyMCEPopup.dom.get('txpLimitImages').value || '0', '0');
 		}, this);
-		this.loadImageBrowser();
+		tinymce.dom.Event.add(tinyMCEPopup.dom.get('txpAuthor'), 'change', function (e) {
+			tinyMCEPopup.dom.setHTML('image_browse', '<img src="img/loading.gif" width="32" height="32" alt="" id="loading" />');
+			this.loadCountBrowser(tinyMCEPopup.dom.get('txpCategory').value || '0', e.target.value, tinyMCEPopup.dom.get('txpLimitImages').value || '0', '0');
+		}, this);
+		tinymce.dom.Event.add(tinyMCEPopup.dom.get('txpLimitImages'), 'change', function (e) {
+			tinyMCEPopup.dom.setHTML('image_browse', '<img src="img/loading.gif" width="32" height="32" alt="" id="loading" />');
+			this.loadCountBrowser(tinyMCEPopup.dom.get('txpCategory').value || '0', tinyMCEPopup.dom.get('txpAuthor').value || '0', e.target.value, '0');
+		}, this);
+		this.loadCountBrowser();
 	    }
 	});
     },
+    loadCountBrowser: function (category, author, limit, limcount) {
+	var selCat = category || "";
+	var selAuthor = author || "";
+	var selLimit = limit || 10;
+	var selLimCount = limcount || 0;
+	var src = tinyMCEPopup.dom.get('src').value || '';
+	tinymce.util.XHR.send({
+	    url:this.txpEndPoint + '?event=hak_txpcountselect&src='+ src + '&c='+ selCat + '&a=' + selAuthor + '&limimg=' + selLimit + '&limcount=' + selLimCount + '&_rnd=' + new Date().getTime(),
+	    type: 'GET',
+	    scope: this,
+	    success: function (response) {
+		tinyMCEPopup.dom.setHTML("imagesmax", response);
+		this.loadImageBrowser(selCat,selAuthor,selLimit,selLimCount);
+	    }
+	});	    	
+    },
     loadImageBrowser: function (category) {
 	var selCat = category || "";
+	var selAuthor = author || "";
+	var selLimit = limit || 10;
+	var selLimCount = limcount || 0;
 	var src = tinyMCEPopup.dom.get('src').value || '';
 	
 	tinymce.util.XHR.send({
-	    url:this.txpEndPoint + '?event=hak_txpimage&src='+ src + '&c='+ selCat + '&_rnd=' + new Date().getTime(),
+	    url:this.txpEndPoint + '?event=hak_txpimage&src='+ src + '&c='+ selCat + '&a=' + selAuthor + '&limimg=' + selLimit + '&limcount=' + selLimCount + '&_rnd=' + new Date().getTime(),
 	    type: 'GET',
 	    success: function (response) {
 		tinyMCEPopup.dom.setHTML("image_browse", response);
