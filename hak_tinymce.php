@@ -867,26 +867,31 @@ function liLinks2($array = '', $value = '', $count = 0, $min_count = 0, $max_cou
 	if($count>0) {
 		foreach ($array as $a) {
 			extract($a);
-			if($count_li == $value) { $class = ' class="li_links active"'; }
+			if($count_li == $value) { $class = ' class="li_links active" style="font-weight: bold;color:red;" '; }
 			else { $class = ' class="li_links"'; }
-			if($count_li>=$min_count && $count_li<=$max_count) {
-				$out[$count_li] = n.t.'<li><a onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', '.$count_li.');return false;" href="#'.$count_li.'" rel="'.$count_li.'" '.$class.'>'.htmlspecialchars($count_li + 1).'</a></li>';
+			if($count_li>=($min_count-1) && $count_li<=$max_count) {
+				$out[] = n.t.'<li><a onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', '.$count_li.');return false;" href="#'.$count_li.'" rel="'.$count_li.'" '.$class.'>'.htmlspecialchars($count_li + 1).'</a></li>';
 			}
 			if($count_li==$max_count) { break; }
 		}
 		if($count>$num && $out) {
-			$out[-1] = n.t.'<li><a  onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', 0);return false;" href="#0" rel="0" '.$class.'>&laquo;</a></li>';
+			$out2x = n.t.'<li><a  onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', 0);return false;" href="#0" rel="0" '.$class.'>&laquo;</a></li>';
 			$tmin = ($min_count-1<0)? 0 : $min_count-1;
-			$out[$tmin] = n.t.'<li><a  onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', '.$tmin.');return false;" href="#'.$tmin.'" rel="'.$tmin.'" '.$class.'>&lt;</a></li>';
-			$tmax = ($max_count+1>$count)? $count : $max_count+1;
-			$out[$tmax] = n.t.'<li><a  onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', '.$tmax.');return false;" href="#'.$tmax.'" rel="'.$tmax.'" '.$class.'>&raquo;</a></li>';
-			$out[$count+1] = n.t.'<li><a  onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', '.$count.');return false;" href="#'.$count.'" rel="'.$count.'" '.$class.'>&raquo;</a></li>';
+                        $value_min = ($value-1<0)? 0 : $value-1;
+			$out1x = n.t.'<li><a  onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', '.$value_min.');return false;" href="#'.$value_min.'" rel="'.$value_min.'" '.$class.'>&lt;</a></li>';
+			array_unshift($out, $out1x, $out2x);
+			//$tmax = ($max_count+1>$count)? $count-1 : $max_count+1;
+                        $value_max = ($value+1>=$count)? $count-1 : $value+1;
+			$out[$count] = n.t.'<li><a  onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', '.$value_max.');return false;" href="#'.$value_max.'" rel="'.$value_max.'" '.$class.'>&gt;</a></li>';
+                        $count2 = $count-1;
+			$out[$count+1] = n.t.'<li><a  onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', '.$count2.');return false;" href="#'.$count2.'" rel="'.$count2.'" '.$class.'>&raquo;</a></li>';
 		}
 	}
 	return n.'<ul id="txpLimitCount" class="pagination">'.
 		( $out ? join('', $out) : '' ).
-		n.'</ul>';		
+		n.'</ul>';	
 }
+
 # --- END PLUGIN CODE ---
 if (0) {
     ?>
