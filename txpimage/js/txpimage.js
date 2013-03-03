@@ -127,7 +127,7 @@ var TxpImageDialog = {
     },
 
     insertAndClose : function() {
-	var ed = tinyMCEPopup.editor, f = document.forms[0], nl = f.elements, v, args = {}, el;
+	var ed = tinyMCEPopup.editor, f = document.forms[0], nl = f.elements, v, args = {}, argsf = {}, el;
 	
 	tinyMCEPopup.restoreSelection();
 	
@@ -188,11 +188,20 @@ var TxpImageDialog = {
 	if (el && el.nodeName == 'IMG') {
 	    ed.dom.setAttribs(el, args);
 	} else {
-	    ed.execCommand('mceInsertContent', false, '<img id="__mce_tmp" />', {skip_undo : 1});
-	    ed.dom.setAttribs('__mce_tmp', args);
-	    ed.dom.setAttrib('__mce_tmp', 'id', '');
-	    ed.undoManager.add();
-	}
+	     if(argsf.href != "") {
+	       ed.execCommand('mceInsertContent', false, '<a id="__mce_tmp_a"><img id="__mce_tmp" /></a>', {skip_undo : 1});
+	       ed.dom.setAttribs('__mce_tmp', args);
+	       ed.dom.setAttrib('__mce_tmp', 'id', '');
+	       ed.dom.setAttribs('__mce_tmp_a', argsf);
+	       ed.dom.setAttrib('__mce_tmp_a', 'id', '');
+	       ed.undoManager.add();
+	     } else {
+	       ed.execCommand('mceInsertContent', false, '<img id="__mce_tmp" />', {skip_undo : 1});
+	       ed.dom.setAttribs('__mce_tmp', args);
+	       ed.dom.setAttrib('__mce_tmp', 'id', '');
+	       ed.undoManager.add();
+	     }  
+	}		
 
 	tinyMCEPopup.close();
     },
