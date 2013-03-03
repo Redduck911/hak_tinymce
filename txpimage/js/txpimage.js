@@ -516,7 +516,7 @@ var TxpImageDialog = {
 	var selLimit = limit || 10;
 	var selLimCount = limcount || 0;
 	var src = tinyMCEPopup.dom.get('src').value || '';
-	var srcf2 = tinyMCEPopup.dom.get('srcf2').value || '';
+	var srcf2 = tinyMCEPopup.dom.get('srcf2').value || 1;
 	
 	tinymce.util.XHR.send({
 	    url:this.txpEndPoint + '?event=hak_txpimage&src='+ src + '&c='+ selCat + '&a=' + selAuthor + '&limimg=' + selLimit + '&limcount=' + selLimCount + '&srcf2=' + srcf2 + '&_rnd=' + new Date().getTime(),
