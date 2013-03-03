@@ -724,9 +724,9 @@ function hak_txpimage() {
 				$thumbclick = 'onclick=\'TxpImageDialog.insertImage(this,'.hak_tinymce::map_attribs($thumb).');return'.n.'false;\'';
 				$thumbclickf = 'onclick=\'TxpImageDialog.insertImage(this,'.hak_tinymce::map_attribsf($thumbf).');return'.n.'false;\'';	
 				$thumbclick = 	'<a href="#" '.$thumbclick.'><img src="img/pictures.png" width="18" height="18" title="'.hak_tinymce::mce_gTxt('insert_thumb').'" alt="'.hak_tinymce::mce_gTxt('insert_thumb').'" /></a>';
-				//if($srcf2) {
+				if($srcf2) {
 					$thumbclick .= '<a href="#" class="thumbclickf" '.$thumbclickf.'><img src="img/picturef.png" width="18" height="18" title="'.hak_tinymce::mce_gTxt('insert_thumb').'" alt="'.hak_tinymce::mce_gTxt('insert_fancy').'" /></a>';
-				//}	
+				}	
 			}
 			
 			//$desiredheight = $preview["height"];

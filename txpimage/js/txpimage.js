@@ -38,6 +38,7 @@ var TxpImageDialog = {
 		nl.usemap.value = dom.getAttrib(n, 'usemap');
 		nl.longdesc.value = dom.getAttrib(n, 'longdesc');
 		nl.insert.value = ed.getLang('update');
+		nl.srcf2.value = '0';
 		
 		if (/^\s*this.src\s*=\s*\'([^\']+)\';?\s*$/.test(dom.getAttrib(n, 'onmouseover'))) {
 		    nl.onmouseoversrc.value = dom.getAttrib(n, 'onmouseover').replace(/^\s*this.src\s*=\s*\'([^\']+)\';?\s*$/, '$1');
@@ -166,6 +167,11 @@ var TxpImageDialog = {
 	    longdesc : nl.longdesc.value
 	});
 
+	tinymce.extend(argsf, {
+	    href : nl.srcf.value,
+	    'class' : 'fancybox'
+	});
+	
 	args.onmouseover = args.onmouseout = '';
 
 	if (f.onmousemovecheck.checked) {
@@ -501,9 +507,10 @@ var TxpImageDialog = {
 	var selLimit = limit || 10;
 	var selLimCount = limcount || 0;
 	var src = tinyMCEPopup.dom.get('src').value || '';
+	var srcf2 = tinyMCEPopup.dom.get('srcf2').value || '';
 	
 	tinymce.util.XHR.send({
-	    url:this.txpEndPoint + '?event=hak_txpimage&src='+ src + '&c='+ selCat + '&a=' + selAuthor + '&limimg=' + selLimit + '&limcount=' + selLimCount + '&_rnd=' + new Date().getTime(),
+	    url:this.txpEndPoint + '?event=hak_txpimage&src='+ src + '&c='+ selCat + '&a=' + selAuthor + '&limimg=' + selLimit + '&limcount=' + selLimCount + '&srcf2=' + srcf2 + '&_rnd=' + new Date().getTime(),
 	    type: 'GET',
 	    success: function (response) {
 		tinyMCEPopup.dom.setHTML("image_browse", response);
