@@ -639,9 +639,21 @@ $js .= t.' });';
         $format .= (!empty($arr["height"])) ? ',height:'.$arr["height"] : '';
         $format .= (!empty($arr["alt"])) ? ',alt:"'.$arr["alt"].'"' : '';
         $format .= (!empty($arr["title"])) ? ',title:"'.$arr["title"].'"' : '';
+		$format .= ',srcf:""'; 
         $format .= '}';
         return $format;
     }
+	
+    function map_attribsf($arr) {
+        $format = '{src:"'.$arr["path"].'"';
+        $format .= (!empty($arr["width"])) ? ',width:'.$arr["width"] : '';
+        $format .= (!empty($arr["height"])) ? ',height:'.$arr["height"] : '';
+        $format .= (!empty($arr["alt"])) ? ',alt:"'.$arr["alt"].'"' : '';
+        $format .= (!empty($arr["title"])) ? ',title:"'.$arr["title"].'"' : '';
+        $format .= (!empty($arr["srcf"])) ? ',srcf:"'.$arr["srcf"].'"' : '';
+        $format .= '}';
+        return $format;
+    }	
 } //--- End Class
 
 //----------------------------------------
@@ -661,9 +673,9 @@ function hak_txpimage() {
 	$limit_image = gps("limimg");
 	$limit_img_count = gps("limcount");
 	
-	if(empty($author) || $author=='0') { $author = ""; }
+	if(empty($author)) { $author = ""; }
 	else { $author = " and author='".doSlash($author)."' "; }
-	if(empty($category) || $category=='0') { $category = ""; }
+	if(empty($category)) { $category = ""; }
 	else { $category = " and category='".doSlash($category)."' "; }
 	
 	if(empty($limit_img_count)) { $limit_img_count = 0; }
@@ -677,7 +689,7 @@ function hak_txpimage() {
 	$srcf2 = gps("srcf2");
 	$srcf2 = (!empty($srcf2))? true : false;
 	
-	$rs = safe_rows_start("*", "txp_image","1=1 ".$category." order by category,name");
+	$rs = safe_rows_start("*", "txp_image","1=1 ".$category.$author." order by id desc,category,name".$limit_image);
 	$src = gps("src");
 
 	
@@ -702,13 +714,19 @@ function hak_txpimage() {
 				$thumb["height"] = $thumb_h;
 				$thumb["alt"] = $image["alt"];
 				$thumb["caption"] = $image["caption"];
+				$thumbf["path"] = hu.$img_dir.'/'.$id.'t'.$ext;
+				$thumbf["width"] = $thumb_w;
+				$thumbf["height"] = $thumb_h;
+				$thumbf["alt"] = $image["alt"];
+				$thumbf["caption"] = $image["caption"];
+				$thumbf["srcf"] = $image["path"];
 				$preview = $thumb;
 				$thumbclick = 'onclick=\'TxpImageDialog.insertImage(this,'.hak_tinymce::map_attribs($thumb).');return'.n.'false;\'';
 				$thumbclickf = 'onclick=\'TxpImageDialog.insertImage(this,'.hak_tinymce::map_attribsf($thumbf).');return'.n.'false;\'';	
 				$thumbclick = 	'<a href="#" '.$thumbclick.'><img src="img/pictures.png" width="18" height="18" title="'.hak_tinymce::mce_gTxt('insert_thumb').'" alt="'.hak_tinymce::mce_gTxt('insert_thumb').'" /></a>';
-				if($srcf2) {
+				//if($srcf2) {
 					$thumbclick .= '<a href="#" class="thumbclickf" '.$thumbclickf.'><img src="img/picturef.png" width="18" height="18" title="'.hak_tinymce::mce_gTxt('insert_thumb').'" alt="'.hak_tinymce::mce_gTxt('insert_fancy').'" /></a>';
-				}	
+				//}	
 			}
 			
 			//$desiredheight = $preview["height"];
@@ -768,7 +786,7 @@ function hak_txpcatselect() {
 	}
 
 	$lim_out = array();
-	$lim_out[] = array('name'=>'0','title'=>'All','level'=>0);
+	$lim_out[] = array('name'=>'0','title'=>'All','level'=>0);  
 	$lim_out[] = array('name'=>'10','title'=>'10','level'=>0);
 	$lim_out[] = array('name'=>'20','title'=>'20','level'=>0);
 	$lim_out[] = array('name'=>'30','title'=>'30','level'=>0);
@@ -812,16 +830,17 @@ function hak_txpcountselect() {
 	$count = 0; $min_count = 0; $max_count = 0; $lim_count_out = array();
 	$count = ceil($rcount/$limit_image);
 	if($count<=$num) { $min_count = 0; $max_count = $count; }
-	else {
-		if($limit_img_count-5>0) { $min_count = $limit_img_count-4; }
-		else { $min_count = 0; }
-		if($limit_img_count+5>$count) { $max_count = $count; }
-		else { $max_count = $limit_img_count+5; }
+	elseif($limit_img_count>$count) { $min_count=($count-$num>0)? $count-$num: 0; $max_count = $count; }
+	elseif($count<$num) { $min_count=0; $max_count=$count; }
+	else{
+		$pol = ceil($num/2);
+		$max_count=($limit_img_count+$pol>=$count)? $count : (($limit_img_count+$pol<=$num)? $num : $limit_img_count+$pol);
+		$min_count=($limit_img_count-$pol<=0)? 0 : (($max_count-$num>0)? $max_count-$num : $limit_img_count-$pol);
 	}
 	for($i=0; $i<$count; $i++) {
 		$lim_count_out[] = array('count_li'=>$i);
 	}
-	if ($rcount>$limit_image && $limit_image>1) { echo liLinks2($lim_count_out, $limit_img_count, $count, $min_count, $max_count, 10); }
+	if ($rcount>$limit_image && $limit_image>1) { echo liLinks2($lim_count_out, $limit_img_count, $count, $min_count, $max_count, $num); }
 	else { echo ''; }
 	exit(0);
 }
@@ -879,7 +898,7 @@ function liLinks2($array = '', $value = '', $count = 0, $min_count = 0, $max_cou
 			$tmin = ($min_count-1<0)? 0 : $min_count-1;
                         $value_min = ($value-1<0)? 0 : $value-1;
 			$out1x = n.t.'<li><a  onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', '.$value_min.');return false;" href="#'.$value_min.'" rel="'.$value_min.'" '.$class.'>&lt;</a></li>';
-			array_unshift($out, $out1x, $out2x);
+			array_unshift($out, $out2x, $out1x);
 			//$tmax = ($max_count+1>$count)? $count-1 : $max_count+1;
                         $value_max = ($value+1>=$count)? $count-1 : $value+1;
 			$out[$count] = n.t.'<li><a  onclick="TxpImageDialog.loadCountBrowser(tinyMCEPopup.dom.get(\'txpCategory\').value || \'0\', tinyMCEPopup.dom.get(\'txpAuthor\').value || \'0\', tinyMCEPopup.dom.get(\'txpLimitImages\').value || \'0\', '.$value_max.');return false;" href="#'.$value_max.'" rel="'.$value_max.'" '.$class.'>&gt;</a></li>';

@@ -495,7 +495,7 @@ var TxpImageDialog = {
 	    }
 	});	    	
     },
-    loadImageBrowser: function (category) {
+    loadImageBrowser: function (category, author, limit, limcount) {
 	var selCat = category || "";
 	var selAuthor = author || "";
 	var selLimit = limit || 10;
